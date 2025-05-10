@@ -9,6 +9,6 @@ int main()
     smartHomeSystemInit();
     while (true) {
         smartHomeSystemUpdate();
-        //holas
+        //hole
     }
 }
