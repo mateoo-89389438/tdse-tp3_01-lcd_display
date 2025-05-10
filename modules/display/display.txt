@@ -1,0 +1,71 @@
+Archivo: display.cpp
+
+Este archivo contiene la implementación de las funciones para controlar un LCD Display en modo 4 bits u 8 bits, usando pines GPIO de la placa NUCLEO-F103RB a través de la librería Mbed.
+
+Clases utilizadas:
+- DigitalOut (de Mbed): se usa para configurar cada pin del LCD como salida digital.
+
+Tipos de datos definidos:
+- No se definen nuevos tipos directamente en este archivo. El tipo display_t se usa, pero está definido en display.h.
+
+Estructuras utilizadas:
+- display_t: estructura que almacena el tipo de conexión (4 bits o 8 bits) para el display. Es una variable global estática.
+
+Funciones públicas implementadas:
+1. `void displayInit(displayConnection_t connection)`
+   - Inicializa el LCD en modo 4 u 8 bits, según el parámetro.
+   - Configura las instrucciones de control del display.
+   - Usa comandos definidos como macros binarias (ej.: DISPLAY_IR_CLEAR_DISPLAY).
+
+2. `void displayCharPositionWrite(uint8_t x, uint8_t y)`
+   - Mueve el cursor del LCD a una posición determinada (x, y).
+
+3. `void displayStringWrite(const char* str)`
+   - Escribe una cadena de caracteres en la posición actual del cursor.
+
+Funciones privadas implementadas:
+1. `static void displayCodeWrite(bool type, uint8_t dataBus)`
+   - Envia comandos o datos al display según el tipo (RS: instruction/data).
+   
+2. `static void displayPinWrite(uint8_t pinName, int value)`
+   - Escribe un valor lógico (0 o 1) sobre un pin específico del display, de acuerdo al modo de conexión.
+
+3. `static void displayDataBusWrite(uint8_t dataBus)`
+   - Envía un byte al bus de datos del display.
+   - En 4-bit mode, lo hace en dos partes (nibble alto y nibble bajo).
+
+Macros definidas:
+- Instrucciones del LCD (por ejemplo, DISPLAY_IR_CLEAR_DISPLAY).
+- Posiciones base para las líneas del LCD de 20x4.
+- Pines de control del LCD (RS, RW, EN, D0–D7).
+
+Observaciones:
+- En modo 4 bits, se usan únicamente los pines D4 a D7.
+- Las líneas de código relacionadas con D0 a D3 están correctamente comentadas, ya que son innecesarias en este modo.
+- El sistema está diseñado para ser compatible con displays de tipo HD44780, controlados completamente por software.
+- Se usa una variable `initial8BitCommunicationIsCompleted` para permitir la secuencia de inicialización especial que requiere el protocolo del LCD.
+
+---
+
+Archivo: display.h
+
+Contiene las definiciones de tipos de datos, estructuras y prototipos de funciones públicas del módulo display.
+
+Tipos de datos definidos:
+1. `displayConnection_t` (enum):
+   - Define los tipos de conexión posibles del display:
+     - `DISPLAY_CONNECTION_GPIO_4BITS`
+     - `DISPLAY_CONNECTION_GPIO_8BITS`
+
+2. `display_t` (struct):
+   - Contiene el tipo de conexión configurado para el display.
+
+Funciones declaradas:
+1. `void displayInit(displayConnection_t connection)`
+2. `void displayCharPositionWrite(uint8_t x, uint8_t y)`
+3. `void displayStringWrite(const char* str)`
+
+Estas funciones permiten inicializar y escribir en el display sin necesidad de manipular directamente los pines en el resto del programa.
+
+Conclusión:
+El módulo `display` encapsula el manejo completo del LCD, permitiendo el uso tanto en modo 4 bits como en 8 bits. Las funciones están claramente divididas entre públicas (interfaz externa) y privadas (lógica interna). La implementación es fácilmente portable a otras placas siempre que se adapten los pines GPIO usados.
